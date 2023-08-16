@@ -1,11 +1,130 @@
 ---
-title: "Real-Final-Project"
+title: "EPI590R Final Project"
+author: "Ernest Koh"
+format:
+  html:
+   theme: cayman
+execute:
+ echo: false
+ cache: true
+ warning: false
+editor: visual
 ---
 
-## Quarto
+## **Factors Associated with Survival in the Titanic Disaster**
 
-Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+**Introduction:** On the 10th of April, 1912, the RMS Titanic set out on its maiden voyage across the Atlantic Ocean, carrying 2,223 passengers. On the 14th of April, it hit an iceberg and sank. In this analysis, we examine factors associated with the probability of survival in the Titanic disaster, including age, sex and ticket class using data available on 1309 of the passengers.
 
 ```{r}
-1 + 1
+#reading dataset
+#| echo: false
+library(readxl)
+library(tidyverse)
+library(gtsummary)
+titanic_data <- read_xlsx(here::here("data", "titanic 2023.xlsx"))|>
+	mutate(Survived_cat = factor(Survived, labels = c("(0) No", "(1) Yes")),
+				 TicketClass_cat = factor(TicketClass, labels = c("First", "Second", "Third")))
 ```
+
+**Descriptive Statistics**
+
+```{r}
+#| label: tbl-one
+#| tbl-cap: "Descriptive Statistics"
+table1 <- tbl_summary(
+  titanic_data,
+  by = Sex,
+  include = c(Age, TicketClass, Survived),
+  label = list(
+  	Age ~ "Age in Years",
+  	TicketClass ~ "Ticket Class",
+  	Survived ~ "Survived"
+  ),
+  missing_text = "Missing") |>
+  add_p(test = list(all_continuous() ~ "t.test", 
+                    all_categorical() ~ "chisq.test")) |> 
+  add_overall(col_label = "**Total**") |> 
+  bold_labels() |> 
+  modify_footnote(update = everything() ~ NA) |> 
+  modify_header(label = "**Variable**", p.value = "**P**")
+table1
+
+survived <- list(number_survival = sum(titanic_data$Survived == 1, na.rm = TRUE))
+died <- list(number_died = sum(titanic_data$Survived == 0, na.rm = TRUE))
+
+#repeated the tbl summary below because cross-ref didn't work when ran with the above code
+table1 <- tbl_summary( 
+  titanic_data,
+  by = Sex,
+  include = c(Age, TicketClass, Survived),
+  label = list(
+  	Age ~ "Age in Years",
+  	TicketClass ~ "Ticket Class",
+  	Survived ~ "Survived"
+  ))
+survived_f <- inline_text(table1, variable = "Survived", column = "female")
+survived_m <- inline_text(table1, variable = "Survived", column = "male")
+```
+@tbl-one shows the initial descriptive statistics of the Titanic dataset. The number of passengers who survived the titanic disaster is `r survived` and the number of passengers who died is `r died`. A greater proportion of female (`r survived_f`) than male (`r survived_m`) passengers survived the disaster.
+
+**Univariate Logistic Regression Analysis**
+
+```{r}
+#| echo: false
+#| label: tbl-two
+#| tbl-cap: "Univariate Logistic Regression"
+tbl_uvregression(
+  titanic_data, 
+  y = Survived_cat,
+  include = c(Age, TicketClass_cat, Sex),
+  method = glm,
+  method.args = list(family = binomial()),
+  exponentiate = TRUE,
+  label = list(Age ~ "Age",
+		Sex ~ "Sex",
+		TicketClass_cat ~ "Ticket Class"
+		))
+```
+
+@tbl-two shows the results from Univariate Logistic Regression.
+
+**Multivariate Logistic Regression Analysis**
+
+```{r}
+#| echo: false
+#| label: tbl-three
+#| tbl-cap: "Multivariate Logistic Regression"
+logistic_model <- glm(Survived_cat ~ Age + Sex + TicketClass_cat, 
+                      data = titanic_data, family = binomial())
+tbl_regression(
+	logistic_model,
+	exponentiate = TRUE,
+	label = list(
+		Age ~ "Age",
+		Sex ~ "Sex",
+		TicketClass_cat ~ "Ticket Class"
+))
+```
+
+@tbl-three shows the results from Multivariate Logistic Regression.
+
+**Plots**
+
+```{r}
+#| echo: false
+library(broom)
+summary(logistic_model)
+glance(logistic_model)
+summary(logistic_model)$coefficients
+tidy(logistic_model, conf.int = TRUE, exponentiate = TRUE) |>
+	tidycat::tidy_categorical(logistic_model, exponentiate = TRUE) |>
+	dplyr::slice(-1) |> 
+	ggplot(mapping = aes(x = level, y = estimate,
+											 ymin = conf.low, ymax = conf.high)) +
+	geom_point() +
+	geom_errorbar() +
+  facet_grid(cols = vars(variable), scales = "free", space = "free") +
+  scale_y_log10()
+```
+
+The `echo: false` option disables the printing of code (only output is displayed).
