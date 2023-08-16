@@ -52,16 +52,6 @@ table1
 survived <- list(number_survival = sum(titanic_data$Survived == 1, na.rm = TRUE))
 died <- list(number_died = sum(titanic_data$Survived == 0, na.rm = TRUE))
 
-#repeated the tbl summary below because cross-ref didn't work when ran with the above code
-table1 <- tbl_summary( 
-  titanic_data,
-  by = Sex,
-  include = c(Age, TicketClass, Survived),
-  label = list(
-  	Age ~ "Age in Years",
-  	TicketClass ~ "Ticket Class",
-  	Survived ~ "Survived"
-  ))
 survived_f <- inline_text(table1, variable = "Survived", column = "female")
 survived_m <- inline_text(table1, variable = "Survived", column = "male")
 ```
@@ -73,7 +63,7 @@ survived_m <- inline_text(table1, variable = "Survived", column = "male")
 #| echo: false
 #| label: tbl-two
 #| tbl-cap: "Univariate Logistic Regression"
-tbl_uvregression(
+table2 <- tbl_uvregression(
   titanic_data, 
   y = Survived_cat,
   include = c(Age, TicketClass_cat, Sex),
@@ -84,9 +74,12 @@ tbl_uvregression(
 		Sex ~ "Sex",
 		TicketClass_cat ~ "Ticket Class"
 		))
+table2
+
+uniOR_report <- inline_text(table2, variable = "TicketClass_cat", level = "Second")
 ```
 
-@tbl-two shows the results from Univariate Logistic Regression.
+@tbl-two shows the results from Univariate Logistic Regression.The odds of passengers with second class ticket surviving the Titanic disaster is `r uniOR_report` as compared to passengers with first class ticket.
 
 **Multivariate Logistic Regression Analysis**
 
@@ -96,7 +89,7 @@ tbl_uvregression(
 #| tbl-cap: "Multivariate Logistic Regression"
 logistic_model <- glm(Survived_cat ~ Age + Sex + TicketClass_cat, 
                       data = titanic_data, family = binomial())
-tbl_regression(
+or_table <- tbl_regression(
 	logistic_model,
 	exponentiate = TRUE,
 	label = list(
@@ -104,11 +97,12 @@ tbl_regression(
 		Sex ~ "Sex",
 		TicketClass_cat ~ "Ticket Class"
 ))
+or_table
+or_report <- inline_text(or_table, variable="Sex", level = "male")
 ```
+@tbl-three shows the results from Multivariate Logistic Regression. The odds of male passengers surviving the titanic disaster is `r or_report` as compared to female passengers controlling for Age and Ticket Class.
 
-@tbl-three shows the results from Multivariate Logistic Regression.
-
-**Plots**
+**OR Estimate Plots**
 
 ```{r}
 #| echo: false
@@ -134,3 +128,6 @@ tidy(logistic_model, conf.int = TRUE, exponentiate = TRUE) |>
   scale_y_log10()
 ```
 @fig-one shows the plot of the point estimate and 95% CI of the Odds Ratio.
+
+**Conclusion**
+There is a statistically significant association between Survival Status and Sex, adjusted for Age and Ticket Class (p<0.001). The odds of surviving the titanic disaster for Male passengers are 0.08 (95% CI 0.06 - 0.11) times the odds for female passengers, adjusting for Age and Ticket Class. 
