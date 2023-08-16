@@ -161,3 +161,26 @@ emo::ji("dog") #just for fun
 ```
 **Conclusion**
 Overall, the proportion of female passengers on board the Titanic is `r prop_f`. There is a statistically significant association between Survival Status and Sex, adjusted for Age and Ticket Class (p<0.001). The odds of surviving the titanic disaster for Male passengers are 0.08 (95% CI 0.06 - 0.11) times the odds for female passengers, adjusting for Age and Ticket Class. 
+
+```{r}
+#| echo: false
+#| include: false
+library(targets)
+
+list(
+  tar_target(
+    data_file,
+    "data/titanic_data.xlsx",
+    format = "file"
+  ),
+  tar_target(
+    raw_data,
+    read_xlsx(data_file)
+  ),
+  tar_target(
+    clean_data,
+    clean_data_function(raw_data)
+  )
+)
+```
+
