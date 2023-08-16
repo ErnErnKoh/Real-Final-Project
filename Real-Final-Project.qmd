@@ -54,6 +54,8 @@ died <- list(number_died = sum(titanic_data$Survived == 0, na.rm = TRUE))
 
 survived_f <- inline_text(table1, variable = "Survived", column = "female")
 survived_m <- inline_text(table1, variable = "Survived", column = "male")
+
+
 ```
 @tbl-one shows the initial descriptive statistics of the Titanic dataset. The number of passengers who survived the titanic disaster is `r survived` and the number of passengers who died is `r died`. A greater proportion of female (`r survived_f`) than male (`r survived_m`) passengers survived the disaster.
 
@@ -78,7 +80,6 @@ table2
 
 uniOR_report <- inline_text(table2, variable = "TicketClass_cat", level = "Second")
 ```
-
 @tbl-two shows the results from Univariate Logistic Regression.The odds of passengers with second class ticket surviving the Titanic disaster is `r uniOR_report` as compared to passengers with first class ticket.
 
 **Multivariate Logistic Regression Analysis**
@@ -110,13 +111,16 @@ or_report <- inline_text(or_table, variable="Sex", level = "male")
 library(broom)
 summary(logistic_model)
 glance(logistic_model)
+# this chunk is for personal review
 ```
 
 ```{r}
 #| echo: false
 #| label: fig-one
 #| fig.cap: "Plot of Estimate of the Odds Ratio"
+options(digits = 3)
 summary(logistic_model)$coefficients
+
 tidy(logistic_model, conf.int = TRUE, exponentiate = TRUE) |>
 	tidycat::tidy_categorical(logistic_model, exponentiate = TRUE) |>
 	dplyr::slice(-1) |> 
@@ -129,5 +133,28 @@ tidy(logistic_model, conf.int = TRUE, exponentiate = TRUE) |>
 ```
 @fig-one shows the plot of the point estimate and 95% CI of the Odds Ratio.
 
+```{r}
+#| echo: false
+#| include: false
+#Getting the reciprocal odds ratio, a very simple function
+x <- 0.89
+1/x 
+reciprocalOR <- function(x) {
+  1/x}
+reciprocalOR(0.46)
+
+#Proportion function
+y <- c(0,1,1,0)
+multiplier <- 100
+multiplier * sum(y)/length(y)
+
+prop <- function(y, multiplier){
+  n <- length(y)
+  prop_val <- multiplier * sum(y)/n
+  return(prop_val)
+}
+prop_f <- prop(y = titanic_data$Sex == "female", multiplier = 100)
+options(digits = 3)
+```
 **Conclusion**
-There is a statistically significant association between Survival Status and Sex, adjusted for Age and Ticket Class (p<0.001). The odds of surviving the titanic disaster for Male passengers are 0.08 (95% CI 0.06 - 0.11) times the odds for female passengers, adjusting for Age and Ticket Class. 
+Overall, the proportion of female passengers on board the Titanic is `r prop_f`. There is a statistically significant association between Survival Status and Sex, adjusted for Age and Ticket Class (p<0.001). The odds of surviving the titanic disaster for Male passengers are 0.08 (95% CI 0.06 - 0.11) times the odds for female passengers, adjusting for Age and Ticket Class. 
