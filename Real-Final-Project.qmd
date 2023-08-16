@@ -117,7 +117,7 @@ glance(logistic_model)
 ```{r}
 #| echo: false
 #| label: fig-one
-#| fig.cap: "Plot of Estimate of the Odds Ratio"
+#| fig.cap: "Forest Plot of Estimate of the Odds Ratio"
 options(digits = 3)
 summary(logistic_model)$coefficients
 
@@ -130,8 +130,9 @@ tidy(logistic_model, conf.int = TRUE, exponentiate = TRUE) |>
 	geom_errorbar() +
   facet_grid(cols = vars(variable), scales = "free", space = "free") +
   scale_y_log10()
+
 ```
-@fig-one shows the plot of the point estimate and 95% CI of the Odds Ratio.
+@fig-one shows the forest plot of the point estimate and 95% CI of the Odds Ratio.
 
 ```{r}
 #| echo: false
@@ -155,6 +156,8 @@ prop <- function(y, multiplier){
 }
 prop_f <- prop(y = titanic_data$Sex == "female", multiplier = 100)
 options(digits = 3)
+
+emo::ji("dog") #just for fun
 ```
 **Conclusion**
 Overall, the proportion of female passengers on board the Titanic is `r prop_f`. There is a statistically significant association between Survival Status and Sex, adjusted for Age and Ticket Class (p<0.001). The odds of surviving the titanic disaster for Male passengers are 0.08 (95% CI 0.06 - 0.11) times the odds for female passengers, adjusting for Age and Ticket Class. 
