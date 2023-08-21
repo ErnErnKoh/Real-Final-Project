@@ -2,6 +2,8 @@
 
 This is the Final Project for EPI590R saved as a .qmd file. Please open the file and render to see the output. Alternatively, you can also run the codes in each chunks within the .qmd file on R.
 
+For the "function", you can replace the the variable from (titanic_data\$Sex == "female") to ("titanic_data\$Sex == "male"), it should give you the value that correspond with the counts provided in the Table 1 i.e., N female / total passengers or N male / total passengers.
+
 [Comments:]{.underline}
 
 There are a lot of functions out there and one of the key take away there is a need to make sure that the correct set of codes are used to generate the results for the various statistical analysis i.e., using log regression for binary outcome, and linear regression for continuous dependent variable.
