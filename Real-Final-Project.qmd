@@ -157,6 +157,7 @@ prop <- function(y, multiplier){
 }
 
 prop_f <- prop(y = titanic_data$Sex == "female", multiplier = 100)
+options(digits = 3)
 
 emo::ji("dog") #just for fun
 ```
