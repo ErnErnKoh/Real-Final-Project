@@ -1,8 +1,12 @@
 # Real-Final-Project
 
-This is the Final Project for EPI590R saved as a .qmd file. Please open the file and render to see the output. Alternatively, you can also run the codes in each chunks within the .qmd file on R.
+This is the Final Project for EPI590R saved as a .qmd file.
 
-For the "function", you can replace the the variable from (titanic_data\$Sex == "female") to ("titanic_data\$Sex == "male"), it should give you the value that correspond with the counts provided in the Table 1 i.e., N female / total passengers or N male / total passengers.
+Please open the file and render to see output. Alternatively, you can also run the codes in each chunks within the .qmd file or run the R script.
+
+For the "reciprocal function", you can input the Odds Ratio shown in Table 2 and Table 3, for the variable "Sex" and "Ticket Class", to get the reciprocal Odds Ratio.
+
+For the "proportion function", you can replace the the variable from (titanic_data\$Sex == "female") to ("titanic_data\$Sex =="male"), it should give you the value that correspond with the counts provided in the Table 1 i.e., N female / total passengers or N male / total passengers.
 
 [Comments:]{.underline}
 
